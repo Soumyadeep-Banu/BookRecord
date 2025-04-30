@@ -47,8 +47,7 @@ router.get("/:id", (req, res) => {
  * Parmanters: none
  */
 
-router.get("/issued/user", (req, res) => {
-  //   console.log("issued Books");
+router.get("/issued/by-users", (req, res) => {
   const usersWithIssuedBook = users.filter((each) => {
     if (each.issuedBook) return each;
   });
@@ -68,10 +67,72 @@ router.get("/issued/user", (req, res) => {
       .status(404)
       .json({ success: false, message: "No booke has been issued" });
 
+  return res.status(200).json({ success: true, data: issuedBooks });
+});
+
+/**
+ * Route: /
+ * Method: POST
+ * Description: Add a new book
+ * Access: Public
+ * Parmanters: none
+ * Data: id, name, genre, price, publication
+ */
+
+router.post("/", (req, res) => {
+  const { data } = req.body;
+
+  if (!data) {
+    res.status(400).json({
+      success: false,
+      message: "There have no data to add a book",
+    });
+  }
+  const book = books.find((each) => each.id === data.id);
+  if (book) {
+    res.status(404).json({
+      success: false,
+      message: "Book id already exists",
+    });
+  }
+
+  const addBook = { ...books, data };
+  return res.status(201).json({
+    success: true,
+    message: "Book added successfully",
+    data: addBook,
+  });
+});
+
+/**
+ * Route: /books/:id
+ * Method: PUT
+ * Description: Updating a book
+ * Access: Public
+ * Parmanters: id
+ */
+
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { data } = req.body;
+
+  const book = books.find((each) => each.id === id);
+
+  if (!book) {
+    return res.status(400).json({
+      success: false,
+      message: "Book not found with that particular Id",
+    });
+  }
+  const UpdatedData = books.map((each) => {
+    if (each.id === id) {
+      return { ...each, ...data };
+    }
+    return each;
+  });
   return res.status(200).json({
     success: true,
-    message: "Users with the issued book",
-    data: issuedBooks,
+    data: UpdatedData,
   });
 });
 
