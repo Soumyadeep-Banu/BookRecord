@@ -4,6 +4,8 @@ const { users } = require("../data/users.json");
 
 const router = express.Router();
 
+const { UserModel, BookModel } = require("../models/index");
+
 /*
 Route - /
 method - GET
